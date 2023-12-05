@@ -1,0 +1,50 @@
+目录结构:
+
+├── CMakeLists.txt
+├── path
+│   ├── CMakeLists.txt
+│   ├── path.cxx
+│   └── path.h
+├── src
+│   ├── demo.c
+│   └── demo.h
+├── test.c
+
+top CMakeLists.txt
+```cmake
+cmake_minimum_required(VERSION 3.8)
+cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
+project(${PROJ} LANGUAGES C)
+
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23)
+
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
+set(EXECUTABLE_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH})
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+set(LIBRARY_KIND STATIC)
+set(STDCXX stdc++)
+else()
+set(LIBRARY_KIND SHARED)
+endif()
+
+add_subdirectory(path)
+
+include_directories(./path)
+add_executable(${PROJECT_NAME} test.c)
+target_link_libraries(${PROJECT_NAME} path)
+
+```
+
+path下CMakeLists.txt
+```cmake
+cmake_minimum_required(VERSION 3.8)
+cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
+project(${PROJ} LANGUAGES CXX)
+
+file(GLOB SRCLIST *.cxx)
+
+add_library(${PROJECT_NAME} ${LIBRARY_KIND} ${SRCLIST})
+
+```
