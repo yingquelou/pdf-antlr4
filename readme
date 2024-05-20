@@ -1,50 +1,13 @@
-目录结构:
+## 更好的向 ai 提问
 
-├── CMakeLists.txt
-├── path
-│   ├── CMakeLists.txt
-│   ├── path.cxx
-│   └── path.h
-├── src
-│   ├── demo.c
-│   └── demo.h
-├── test.c
+非常感谢您的提问！为了让我能够更准确地理解您的问题并提供解决方案，您可以采取以下几个步骤：
 
-top CMakeLists.txt
-```cmake
-cmake_minimum_required(VERSION 3.8)
-cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
-project(${PROJ} LANGUAGES C)
+1. 尽量清晰明确地描述您的问题：提供足够的背景信息、关键细节和您的具体需求，这样我才能更好地理解您的问题。
 
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_CXX_STANDARD 23)
+2. 简明扼要地表达问题：尽量用简洁的语言描述问题，避免冗长的叙述，这样我可以更快地理解您的意图。
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
-set(EXECUTABLE_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH})
+3. 提供相关的上下文信息：如果问题涉及特定领域、技术或背景知识，请提供相关的上下文信息，这样我可以更好地为您提供准确的答案。
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-set(LIBRARY_KIND STATIC)
-set(STDCXX stdc++)
-else()
-set(LIBRARY_KIND SHARED)
-endif()
+4. 如果可能，请提供示例或具体案例：如果您能提供示例或具体案例，将有助于我更好地理解您的问题，并提供更具体的解决方案。
 
-add_subdirectory(path)
-
-include_directories(./path)
-add_executable(${PROJECT_NAME} test.c)
-target_link_libraries(${PROJECT_NAME} path)
-
-```
-
-path下CMakeLists.txt
-```cmake
-cmake_minimum_required(VERSION 3.8)
-cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
-project(${PROJ} LANGUAGES CXX)
-
-file(GLOB SRCLIST *.cxx)
-
-add_library(${PROJECT_NAME} ${LIBRARY_KIND} ${SRCLIST})
-
-```
+通过以上方法，您可以帮助我更好地理解您的问题，从而提供更准确、有针对性的答案。期待与您的进一步互动！

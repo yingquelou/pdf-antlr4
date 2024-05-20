@@ -6,3 +6,6 @@
 build
 
 .vscode
+*.s
+*.dll
+*.tlb

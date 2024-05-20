@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.8)
+cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
+project(${PROJ} LANGUAGES C)
+# file(GLOB SRCLIST *.c)
+# find_package(cjson REQUIRED)
+# set(CMAKE_WIN32_EXECUTABLE ON)
+add_library(${PROJ} add.c)
