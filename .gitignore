@@ -9,3 +9,7 @@ build
 *.s
 *.dll
 *.tlb
+*.pdf
+.antlr
+*.swp
+*.ma*
