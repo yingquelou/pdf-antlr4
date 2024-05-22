@@ -4,7 +4,7 @@
 #include <mathParser.h>
 int main(int argc, char const *argv[])
 {
-    std::ofstream log("D:/projects/c/demo/log.txt");
+    std::ofstream log("log.txt");
     auto sb = std::cout.rdbuf(log.rdbuf());
     for (size_t i = 1; argv[i]; ++i)
     {

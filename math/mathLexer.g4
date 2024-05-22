@@ -1,6 +1,7 @@
 lexer grammar mathLexer;
 options{
 	language = Cpp;
+	language = Java;
 }
 Space: [ \t\r\n]+ -> skip;
 Ld: '<<';
@@ -9,25 +10,23 @@ La: '[';
 Ra: ']';
 fragment D: [0-9];
 Obj: 'obj';
-R: 'R' ;
+R: 'R';
 EndObj: 'endobj';
-
+Startxref: 'startxref';
 
 // pdf原子对象
-Boolean:'false'|'true';
+Boolean: 'false' | 'true';
 Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
 XStr: '<' [0-9A-Fa-f]*? '>';
 Str: '(' ~')'*? ')';
-Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/'))+;
+Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>'))+;
 FE: EOF -> skip;
-// EOL: [\r\n]+;
-// Comment: '%' .*? EOL -> skip;
-// mode objMode;
-// Obj: D+ D+ 'obj' -> mode(DEFAULT_MODE);
+EOL: [\r\n]+;
+Comment: '%' .*? EOL -> skip;
+// mode objMode; Obj: D+ D+ 'obj' -> mode(DEFAULT_MODE);
 
-// mode rMode;
-// R: D+ D+ 'R' -> mode(DEFAULT_MODE);
+// mode rMode; R: D+ D+ 'R' -> mode(DEFAULT_MODE);
 mode StreamMode;
 EndStream: 'endstream' -> mode(DEFAULT_MODE);
 Sp: [ \r\n\t] -> skip;
