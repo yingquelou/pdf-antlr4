@@ -10,7 +10,8 @@ int main(int argc, char const *argv[])
     {
         std::cout << "-----" << argv[i] << "-----\n";
         std::ifstream ifs(argv[i], std::ios_base::binary);
-        antlr4::ANTLRInputStream input(ifs);
+        antlr4::ANTLRFileStream input;
+        input.load(ifs);
         mathLexer lexer(&input);
         antlr4::CommonTokenStream ct(&lexer);
         mathParser parser(&ct);

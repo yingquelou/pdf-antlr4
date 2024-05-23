@@ -1,6 +1,5 @@
 parser grammar mathParser;
 options{
-	language = Java;
 	language = Cpp;
 	tokenVocab = mathLexer;
 }

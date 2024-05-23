@@ -1,7 +1,6 @@
 lexer grammar mathLexer;
 options{
 	language = Cpp;
-	language = Java;
 }
 Space: [ \t\r\n]+ -> skip;
 Ld: '<<';
@@ -20,7 +19,7 @@ Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
 XStr: '<' [0-9A-Fa-f]*? '>';
 Str: '(' ~')'*? ')';
-Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>'))+;
+Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>' | ']'))+;
 FE: EOF -> skip;
 EOL: [\r\n]+;
 Comment: '%' .*? EOL -> skip;
