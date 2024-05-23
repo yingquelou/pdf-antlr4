@@ -1,4 +1,4 @@
-lexer grammar mathLexer;
+lexer grammar pdfLexer;
 options{
 	language = Cpp;
 }

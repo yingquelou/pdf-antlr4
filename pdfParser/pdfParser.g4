@@ -1,7 +1,7 @@
-parser grammar mathParser;
+parser grammar pdfParser;
 options{
 	language = Cpp;
-	tokenVocab = mathLexer;
+	tokenVocab = pdfLexer;
 }
 @parser::header { 
  }
