@@ -1,14 +1,29 @@
 #include <iostream>
-#include <antlr4-runtime.h>
 #include <BLexer.h>
+#include <BParser.h>
 int main(int argc, char const *argv[])
 {
-    std::ifstream ifs("mm.pdf");
-    antlr4::ANTLRFileStream file;
-    file.load(ifs);
-    BLexer lexer(&file);
-    antlr4::CommonTokenStream cts(&lexer);
-    std::cout << 
-    antlrcpp::toHexString(0b1010);
+    for (size_t i = 1; argv[i]; ++i)
+    {
+        std::ifstream ifs(argv[i]);
+        if (ifs)
+        {
+            antlr4::ANTLRFileStream file;
+            try
+            {
+                file.load(ifs);
+            }
+            catch (antlr4::IllegalArgumentException e)
+            {
+            }
+            BLexer lexer(&file);
+            antlr4::CommonTokenStream cts(&lexer);
+
+            std::cout << lexer.getSourceName();
+
+            ifs.close();
+        }
+    }
+
     return 0;
 }
