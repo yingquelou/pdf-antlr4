@@ -28,5 +28,4 @@ objRef
 
 array: La obj? obj* Ra;
 dict: Ld (obj obj)*? obj? Rd;
-// int: | Int {std::cout<<$Int->Show();};
 stream: Stream Any*? EndStream;

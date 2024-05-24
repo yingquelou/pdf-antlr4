@@ -1,7 +1,7 @@
 #include <fstream>
 #include <antlr4-runtime.h>
-#include <mathLexer.h>
-#include <mathParser.h>
+#include <pdfLexer.h>
+#include <pdfParser.h>
 int main(int argc, char const *argv[])
 {
     std::ofstream log("log.txt");
@@ -12,9 +12,9 @@ int main(int argc, char const *argv[])
         std::ifstream ifs(argv[i], std::ios_base::binary);
         antlr4::ANTLRFileStream input;
         input.load(ifs);
-        mathLexer lexer(&input);
+        pdfLexer lexer(&input);
         antlr4::CommonTokenStream ct(&lexer);
-        mathParser parser(&ct);
+        pdfParser parser(&ct);
         parser.start();
         // parser.array();
         // parser.stream();
