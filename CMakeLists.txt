@@ -23,4 +23,5 @@ set(CMAKE_CXX_STANDARD 26)
 # include_directories("C:/Program Files (x86)/Adobe/Acrobat DC/PDFMaker/Office/x64" "C:/Program Files (x86)/Adobe/Acrobat DC/Acrobat")
 
 # install(TARGETS ${PROJ})
-add_subdirectory(ParserB)
+# add_subdirectory(ParserB)
+add_subdirectory(ParserPdf)
