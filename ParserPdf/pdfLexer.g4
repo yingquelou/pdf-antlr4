@@ -3,32 +3,37 @@ options{
 	language = Cpp;
 }
 Space: [ \t\r\n]+ -> skip;
+XStr: '<' [0-9A-Fa-f]*? '>';
+Trailer: 'trailer';
 Ld: '<<';
 Rd: '>>';
 La: '[';
 Ra: ']';
 fragment D: [0-9];
+Null: 'null';
 Obj: 'obj';
 R: 'R';
 EndObj: 'endobj';
 Startxref: 'startxref';
-
+Xref: 'xref';
+F: 'f';
+N: 'n';
+Lp: '(' -> mode(strMode);
 // pdf原子对象
 Boolean: 'false' | 'true';
 Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
-XStr: '<' [0-9A-Fa-f]*? '>';
-Str: '(' ~')'*? ')';
 Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>' | ']'))+;
-FE: EOF -> skip;
-EOL: [\r\n]+;
-Comment: '%' .*? EOL -> skip;
-// mode objMode; Obj: D+ D+ 'obj' -> mode(DEFAULT_MODE);
 
-// mode rMode; R: D+ D+ 'R' -> mode(DEFAULT_MODE);
+EOL: (EOF | [\r\n]+) -> skip;
+Comment: '%' .*? EOL -> skip;
+Stream: 'stream' [ \r\n]* -> mode(StreamMode);
+
+mode strMode;
+ESC: '\\' (D D? D? | [nrtbf] | '\\' | '(' | ')');
+AnyStr: ~')';
+Rp: ')' -> mode(DEFAULT_MODE);
+
 mode StreamMode;
-EndStream: 'endstream' -> mode(DEFAULT_MODE);
-Sp: [ \r\n\t] -> skip;
+EndStream: [ \r\n\t]* 'endstream' -> mode(DEFAULT_MODE);
 Any: .;
-mode DEFAULT_MODE;
-Stream: 'stream' -> mode(StreamMode);

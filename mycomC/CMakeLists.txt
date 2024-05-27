@@ -1,17 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.8)
+cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
 
-project(SampleCOMProject)
+cmake_path(GET CMAKE_CXX_COMPILER PARENT_PATH DIR)
 
-add_library(SampleCOMLibrary SHARED
-    SampleCOMObject.c
-    SampleCOMObject.def
-)
-
-target_include_directories(SampleCOMLibrary PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-set_target_properties(SampleCOMLibrary PROPERTIES
-    PREFIX ""
-)
+set(MYSY2_UCRT_INCLUDE ${DIR}/../include)
+include_directories(.antlr ${MYSY2_UCRT_INCLUDE}/antlr4-runtime)
+file(GLOB LEX .antlr/*.cpp;*.cpp)
+add_executable(${PROJ} ${LEX})
+target_link_libraries(${PROJ} antlr4-runtime z)
 

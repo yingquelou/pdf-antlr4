@@ -2,28 +2,30 @@
 #include <antlr4-runtime.h>
 #include <pdfLexer.h>
 #include <pdfParser.h>
+// #include "format.h"
 int main(int argc, char const *argv[])
 {
-    std::ofstream log("log.txt");
-    auto sb = std::cout.rdbuf(log.rdbuf());
     for (size_t i = 1; argv[i]; ++i)
     {
         std::cout << "-----" << argv[i] << "-----\n";
+        std::string s(argv[i]);
+        s += ".txt";
+        std::ofstream ofs(s);
         std::ifstream ifs(argv[i], std::ios_base::binary);
         antlr4::ANTLRFileStream input;
-        input.load(ifs);
+        input.load(ifs, true);
         pdfLexer lexer(&input);
         antlr4::CommonTokenStream ct(&lexer);
         pdfParser parser(&ct);
-        parser.start();
+        auto &&node = parser.start();
+        // ofs << node->getText();
         // parser.array();
         // parser.stream();
         // antlr4::Token *t;
-        // t->
-
+        // antlr4::format ft(ofs);
+        // ft.visit(node);
+        ofs.close();
         ifs.close();
     }
-    std::cout.rdbuf(sb);
-    log.close();
     return 0;
 }
