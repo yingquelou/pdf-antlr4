@@ -1,85 +1,60 @@
+// 实现对pdf文件stream与endstream之间的内容的解析
 #include <zlib.h>
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <zlib.h>
-
-#define CHUNK 16384
-struct pair
+#include <string>
+std::string parserStream(std::string &stream)
 {
-    Bytef *buffer;
-    std::streampos len;
-};
-pair readBin(const char *filename)
-{
-    std::ifstream ifs(filename);
-    ifs.seekg(0, std::ifstream::end);
-    std::streamoff end = ifs.tellg();
-    Bytef *ok = (Bytef *)calloc(1, end + 1);
-    ifs.read((char *)ok, end);
-    ifs.close();
-    return {ok, end};
-}
-
-int main()
-{
-    // 读取PDF文件中的二进制数据，存储到source数组中
-    // 假设source和sourceLen是已知的
-
-    // 分配用于存储解压缩数据的缓冲区
-    Bytef *dest = (Bytef *)malloc(CHUNK);
-    uLongf destLen = CHUNK;
-    auto re = readBin("C:/Users/26951/AppData/Local/Temp/scik.0-3-0z.txt");
-    // 初始化zlib解压缩流
-    z_stream stream;
-    stream.zalloc = Z_NULL;
-    stream.zfree = Z_NULL;
-    stream.opaque = Z_NULL;
-    stream.avail_in = re.len;
-    stream.next_in = re.buffer;
-    stream.avail_out = CHUNK;
-    stream.next_out = dest;
-
-    // 初始化zlib解压缩环境
-    int ret = inflateInit(&stream);
-    if (ret != Z_OK)
+    std::string result;
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = stream.size();
+    strm.next_in = (Bytef *)stream.c_str();
+    if (inflateInit(&strm) != Z_OK)
     {
-        printf("初始化解压缩环境失败\n");
-        return 1;
+        return result;
     }
-
-    // 循环解压缩数据
+    char out[1024];
     do
     {
-        ret = inflate(&stream, Z_NO_FLUSH);
-        if (ret < 0)
+        strm.avail_out = 1024;
+        strm.next_out = (Bytef *)out;
+        if (inflate(&strm, Z_NO_FLUSH) == Z_STREAM_ERROR)
         {
-            printf("解压缩失败，错误码：%d\n", ret);
-            inflateEnd(&stream);
-            return 1;
+            return result;
         }
+        result.append(out, 1024 - strm.avail_out);
+    } while (strm.avail_out == 0);
+    inflateEnd(&strm);
+    return result;
+}
+#include <iostream>
+#include <fstream>
+// 实现读取文件内容到std::string
+std::string readFile(const std::string &filename)
+{
+    std::ifstream file(filename, std::ios::binary);
+    if (!file)
+    {
+        return "";
+    }
+    std::string content;
+    file.seekg(0, std::ios::end);
+    content.resize(file.tellg());
+    file.seekg(0, std::ios::beg);
+    file.read(&content[0], content.size());
 
-        // 如果输出缓冲区已满，扩展缓冲区并继续解压缩
-        if (stream.avail_out == 0)
-        {
-            dest = (Bytef *)realloc(dest, destLen + CHUNK);
-            stream.next_out = dest + destLen;
-            stream.avail_out = CHUNK;
-            destLen += CHUNK;
-        }
-    } while (ret != Z_STREAM_END);
+    return content;
+}
 
-    // 完成解压缩
-    inflateEnd(&stream);
-
-    // 输出解压缩后的数据
-    printf("解压缩后的数据大小：%lu\n", destLen - stream.avail_out);
-
-    // 处理解压缩后的数据
-
-    // 释放内存
-    free(dest);
-    free(re.buffer);
+int main(int argc, char const *argv[])
+{
+    for (int i = 1; argv[i]; i++)
+    {
+        std::string stream = readFile(argv[i]);
+        std::string result = parserStream(stream);
+        std::cout << result.size() << std::endl;
+        std::cout << result << std::endl;
+    }
     return 0;
 }

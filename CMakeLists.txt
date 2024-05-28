@@ -24,5 +24,5 @@ set(CMAKE_CXX_STANDARD 26)
 
 # install(TARGETS ${PROJ})
 # add_subdirectory(ParserB)
-add_subdirectory(ParserPdf)
-# add_subdirectory(mycomC)
+# add_subdirectory(ParserPdf)
+add_subdirectory(mycomC)

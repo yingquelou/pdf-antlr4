@@ -2,7 +2,7 @@
 #include <antlr4-runtime.h>
 #include <pdfLexer.h>
 #include <pdfParser.h>
-// #include "format.h"
+#include "format.h"
 int main(int argc, char const *argv[])
 {
     for (size_t i = 1; argv[i]; ++i)
@@ -22,8 +22,8 @@ int main(int argc, char const *argv[])
         // parser.array();
         // parser.stream();
         // antlr4::Token *t;
-        // antlr4::format ft(ofs);
-        // ft.visit(node);
+        antlr4::format ft(ofs);
+        ft.visit(node);
         ofs.close();
         ifs.close();
     }

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <algorithm>
 #include <antlr4-runtime.h>
 namespace antlr4
 {
@@ -35,14 +36,8 @@ namespace antlr4
             if (tree)
             {
                 visit(tree->Ld());
-                auto begin = tree->obj().begin();
-                auto end = tree->obj().end();
-                for (auto it = begin; it < end; it += 2)
-                {
-                    visit(*it);
-                    visit(*it);
-                    os << '\n';
-                }
+                for (auto &&node : tree->obj())
+                    visit(node);
                 visit(tree->Rd());
                 os << '\n';
             }
@@ -62,6 +57,7 @@ namespace antlr4
             }
             return 0;
         }
+
         std::any visit(pdfParser::ObjRefContext *tree)
         {
             if (tree)
@@ -114,6 +110,14 @@ namespace antlr4
             if (tree)
             {
                 visit(tree->Stream());
+                // 根据index,gen采用c++通用方式创建临时文件名
+                std::string filename(tmpnam(nullptr));
+                filename += "-" + Index + '-' + Gen + ".stream";
+                std::ofstream ofs(filename, std::ios::binary);
+                for (auto &&node : tree->Any())
+                    ofs << node->getText();
+                ofs.close();
+                std::cout << "stream data saved to " << filename << '\n';
                 visit(tree->EndStream());
             }
             return 0;
@@ -129,11 +133,11 @@ namespace antlr4
         }
         std::any visit(pdfParser::XrefContext *tree)
         {
-            std::cout << tree->getRuleIndex();
             if (tree)
                 os << tree->getText() << '\n';
             return 0;
         }
+        std::string Index, Gen;
         std::any visit(pdfParser::PdfObjContext *tree)
         {
             if (tree)
@@ -142,6 +146,8 @@ namespace antlr4
                 {
                     visit(node);
                 }
+                Index = tree->Int(0)->getText();
+                Gen = tree->Int(1)->getText();
                 visit(tree->Obj());
                 for (auto &&node : tree->obj())
                 {

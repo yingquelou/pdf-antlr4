@@ -2,6 +2,9 @@ lexer grammar pdfLexer;
 options{
 	language = Cpp;
 }
+channels {
+	streambody
+}
 Space: [ \t\r\n]+ -> skip;
 XStr: '<' [0-9A-Fa-f]*? '>';
 Trailer: 'trailer';
