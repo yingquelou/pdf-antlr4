@@ -1,60 +1,57 @@
 // 实现对pdf文件stream与endstream之间的内容的解析
-#include <zlib.h>
-#include <string>
-std::string parserStream(std::string &stream)
-{
-    std::string result;
-    z_stream strm;
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    strm.avail_in = stream.size();
-    strm.next_in = (Bytef *)stream.c_str();
-    if (inflateInit(&strm) != Z_OK)
-    {
-        return result;
-    }
-    char out[1024];
-    do
-    {
-        strm.avail_out = 1024;
-        strm.next_out = (Bytef *)out;
-        if (inflate(&strm, Z_NO_FLUSH) == Z_STREAM_ERROR)
-        {
-            return result;
-        }
-        result.append(out, 1024 - strm.avail_out);
-    } while (strm.avail_out == 0);
-    inflateEnd(&strm);
-    return result;
-}
+
+// 1. 读取文件内容到std::string
+// 2. 能解析pdf常见的编码的stream内容
+// 3. 输出解析后的内容
+
 #include <iostream>
 #include <fstream>
-// 实现读取文件内容到std::string
-std::string readFile(const std::string &filename)
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <antlr4-runtime.h>
+#include "pdfLexer.h"
+#include "pdfParser.h"
+#include "pdfBaseVisitor.h"
+#include "pdfBaseListener.h"
+#include "format.h"
+
+using namespace antlr4;
+
+std::string read_file(const std::string &filename)
 {
-    std::ifstream file(filename, std::ios::binary);
-    if (!file)
+    std::ifstream ifs(filename);
+    if (!ifs)
     {
+        std::cerr << "open file " << filename << " failed\n";
         return "";
     }
     std::string content;
-    file.seekg(0, std::ios::end);
-    content.resize(file.tellg());
-    file.seekg(0, std::ios::beg);
-    file.read(&content[0], content.size());
-
+    ifs.seekg(0, std::ios::end);
+    content.resize(ifs.tellg());
+    ifs.seekg(0, std::ios::beg);
+    ifs.read(&content[0], content.size());
     return content;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, const char *argv[])
 {
-    for (int i = 1; argv[i]; i++)
+    if (argc < 2)
     {
-        std::string stream = readFile(argv[i]);
-        std::string result = parserStream(stream);
-        std::cout << result.size() << std::endl;
-        std::cout << result << std::endl;
+        std::cerr << "usage: " << argv[0] << " filename\n";
+        return 1;
     }
+    std::string content = read_file(argv[1]);
+    if (content.empty())
+    {
+        return 1;
+    }
+    ANTLRInputStream input(content);
+    pdfLexer lexer(&input);
+    CommonTokenStream tokens(&lexer);
+    pdfParser parser(&tokens);
+    tree::ParseTree *tree = parser.start();
+    format fmt(std::cout);
+    fmt.visit(tree);
     return 0;
 }

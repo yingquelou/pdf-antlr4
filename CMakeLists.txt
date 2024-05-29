@@ -24,5 +24,26 @@ set(CMAKE_CXX_STANDARD 26)
 
 # install(TARGETS ${PROJ})
 # add_subdirectory(ParserB)
-# add_subdirectory(ParserPdf)
-add_subdirectory(mycomC)
+add_subdirectory(ParserPdf)
+# add_subdirectory(mycomC)
+file(GLOB ANTLR4JAR ./antlr4-runtime/antlr4-*-complete.jar)
+file(GLOB_RECURSE ANTLR4GRAMMAR *.g4)
+
+foreach(ITEM ${ANTLR4GRAMMAR})
+    cmake_path(GET ITEM PARENT_PATH ITEM_NAME)    
+    cmake_path(GET ITEM STEM ITEM_PROJECT)    
+    set(CUR_ANTLR_TARGET_DIR ${ITEM_NAME}/.antlr)
+    file(MAKE_DIRECTORY ${CUR_ANTLR_TARGET_DIR})
+add_custom_target(${ITEM_PROJECT}
+    COMMAND java -jar ${ANTLR4JAR} -o ${CUR_ANTLR_TARGET_DIR} ${ITEM}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating C++ ANTLR files from ${ITEM}"
+    )
+list(APPEND ANTLR4_TARGETS ${CUR_ANTLR_TARGET_DIR})
+endforeach()
+add_custom_target(ANTLR4CLEAN 
+COMMAND ${CMAKE_COMMAND} -E rm -rf ${ANTLR4_TARGETS}
+DEPENDS ${ANTLR4_TARGETS})
+
+# message(${ANTLR4GRAMMAR})
+
