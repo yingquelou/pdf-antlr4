@@ -2,7 +2,8 @@
 #include <antlr4-runtime.h>
 #include <pdfLexer.h>
 #include <pdfParser.h>
-#include "format.h"
+// #include "format.h"
+#include "pdListener.h"
 int main(int argc, char const *argv[])
 {
     for (size_t i = 1; argv[i]; ++i)
@@ -15,15 +16,21 @@ int main(int argc, char const *argv[])
         antlr4::ANTLRFileStream input;
         input.load(ifs, true);
         pdfLexer lexer(&input);
+        lexer.emit();
         antlr4::CommonTokenStream ct(&lexer);
         pdfParser parser(&ct);
-        auto &&node = parser.start();
+        pdListener listener;
+        // antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, parser.start());
+        parser.addParseListener(&listener);
+        parser.start();
+        // auto &&node = parser.start();
         // ofs << node->getText();
         // parser.array();
         // parser.stream();
         // antlr4::Token *t;
-        antlr4::format ft(ofs);
-        ft.visit(node);
+        // antlr4::format ft(ofs);
+        // ft.visit(node);
+
         ofs.close();
         ifs.close();
     }

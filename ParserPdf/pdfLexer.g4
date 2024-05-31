@@ -5,6 +5,19 @@ options{
 channels {
 	streambody
 }
+
+@lexer::members {
+	antlr4::Token *emit() override;
+}
+@lexer::definitions {
+antlr4::Token *pdfLexer::emit(){
+	if(this->channel == pdfLexer::streambody){
+		std::cout<< "streambody\n";
+	}
+	return	Lexer::emit();
+ }
+
+}
 Space: [ \t\r\n]+ -> skip;
 XStr: '<' [0-9A-Fa-f]*? '>';
 Trailer: 'trailer';
@@ -39,4 +52,4 @@ Rp: ')' -> mode(DEFAULT_MODE);
 
 mode StreamMode;
 EndStream: [ \r\n\t]* 'endstream' -> mode(DEFAULT_MODE);
-Any: .;
+Any: . -> channel(streambody);
