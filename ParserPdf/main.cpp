@@ -1,6 +1,6 @@
 #include <fstream>
 #include <antlr4-runtime.h>
-#include <pdfLexer.h>
+#include <pdLexer.h>
 #include <pdfParser.h>
 // #include "format.h"
 #include "pdListener.h"
@@ -15,12 +15,10 @@ int main(int argc, char const *argv[])
         std::ifstream ifs(argv[i], std::ios_base::binary);
         antlr4::ANTLRFileStream input;
         input.load(ifs, true);
-        pdfLexer lexer(&input);
-        lexer.emit();
+        pdLexer lexer(&input);
         antlr4::CommonTokenStream ct(&lexer);
         pdfParser parser(&ct);
         pdListener listener;
-        // antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, parser.start());
         parser.addParseListener(&listener);
         parser.start();
         // auto &&node = parser.start();
@@ -30,7 +28,6 @@ int main(int argc, char const *argv[])
         // antlr4::Token *t;
         // antlr4::format ft(ofs);
         // ft.visit(node);
-
         ofs.close();
         ifs.close();
     }

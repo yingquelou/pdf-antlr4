@@ -117,7 +117,7 @@ namespace antlr4
                 for (auto &&node : tree->Any())
                     ofs << node->getText();
                 ofs.close();
-                std::cout << "stream data saved to " << filename << '\n';
+                // std::cout << "stream data saved to " << filename << '\n';
                 visit(tree->EndStream());
             }
             return 0;

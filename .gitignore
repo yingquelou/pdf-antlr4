@@ -13,3 +13,4 @@ build
 .antlr
 *.swp
 *.ma*
+*.stream

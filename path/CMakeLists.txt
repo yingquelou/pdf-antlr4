@@ -4,5 +4,6 @@ project(${PROJ} LANGUAGES CXX)
 
 file(GLOB SRCLIST *.cxx)
 
-add_library(${PROJECT_NAME} ${LIBRARY_KIND} ${SRCLIST})
+# add_library(${PROJECT_NAME} ${LIBRARY_KIND} ${SRCLIST})
+configAntlr4Target(f.g4)
 

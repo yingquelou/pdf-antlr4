@@ -2,13 +2,12 @@
 
 void pdListener::exitXref(pdfParser::XrefContext *ctx)
 {
-    // std::cout
-    //     << ctx->Xref()->getText() << '\n';
-    //     for (auto &&i : ctx->Int())
-    //     {
-    //         std::cout << i->getText() << '\n';
-    //     }
-        
+    // for (auto &&sub : ctx->subXref())
+    // {
+    //     std::cout << sub->Int(0)->getText() << ' ' << sub->Int(1)->getText() << '\n';
+    //     for (auto &&entry : sub->subXrefEntry())
+    //         std::cout << entry->Int(0)->getText() << ' ' << entry->Int(1)->getText() << ' ' << (entry->F() ? 'f' : 'n') << '\n';
+    // }
 }
 
 void pdListener::exitPdfObj(pdfParser::PdfObjContext *ctx)
@@ -24,4 +23,9 @@ void pdListener::visitErrorNode(antlr4::tree::ErrorNode *node)
 void pdListener::visitTerminal(antlr4::tree::TerminalNode *node)
 {
     // std::cout << "Terminal: " << node->getText() << '\n';
+}
+
+void pdListener::exitStream(pdfParser::StreamContext *ctx)
+{
+    // std::cout << ctx << '\n';
 }

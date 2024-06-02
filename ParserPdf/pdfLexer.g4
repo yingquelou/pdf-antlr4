@@ -1,3 +1,12 @@
+/**
+ * This is the lexer grammar for parsing PDF files.
+ It defines the token rules and lexer modes for
+ * the PDF lexer.
+ The lexer rules include patterns for whitespace, strings, numbers, names, and
+ * other PDF syntax elements.
+ The lexer modes handle special cases such as string literals and
+ * stream bodies.
+ */
 lexer grammar pdfLexer;
 options{
 	language = Cpp;
@@ -5,24 +14,11 @@ options{
 channels {
 	streambody
 }
-
-@lexer::members {
-	antlr4::Token *emit() override;
-}
-@lexer::definitions {
-antlr4::Token *pdfLexer::emit(){
-	if(this->channel == pdfLexer::streambody){
-		std::cout<< "streambody\n";
-	}
-	return	Lexer::emit();
- }
-
-}
-Space: [ \t\r\n]+ -> skip;
-XStr: '<' [0-9A-Fa-f]*? '>';
+Space: [ \t\r\n] -> skip;
 Trailer: 'trailer';
 Ld: '<<';
 Rd: '>>';
+Lx: '<' -> mode(hstrMode);
 La: '[';
 Ra: ']';
 fragment D: [0-9];
@@ -35,21 +31,24 @@ Xref: 'xref';
 F: 'f';
 N: 'n';
 Lp: '(' -> mode(strMode);
-// pdf原子对象
 Boolean: 'false' | 'true';
 Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
 Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>' | ']'))+;
 
-EOL: (EOF | [\r\n]+) -> skip;
-Comment: '%' .*? EOL -> skip;
-Stream: 'stream' [ \r\n]* -> mode(StreamMode);
+Comment: '%' .*? (EOF | Space+) -> skip;
+Stream: 'stream' Space* -> mode(StreamMode);
+fragment EOL: '\r'? '\n';
 
 mode strMode;
-ESC: '\\' (D D? D? | [nrtbf] | '\\' | '(' | ')');
-AnyStr: ~')';
+Concat: '\\' [ \t]* EOL -> skip;
+Char: '\\' (D D? D? | [nrtbf] | '\\' | '(' | ')') | ~')';
 Rp: ')' -> mode(DEFAULT_MODE);
+mode hstrMode;
+HIgnore: Space -> skip;
+HexChar: [0-9A-Fa-f];
+Rx: '>' -> mode(DEFAULT_MODE);
 
 mode StreamMode;
-EndStream: [ \r\n\t]* 'endstream' -> mode(DEFAULT_MODE);
-Any: . -> channel(streambody);
+EndStream: Space* 'endstream' -> mode(DEFAULT_MODE);
+Byte: . -> channel(streambody);

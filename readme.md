@@ -1,4 +1,5 @@
-本仓库采用antlr4解析pdf
+与startxref -> trailer & xref -> obj 的方式不同
+本仓库采用antlr4对pdf进行硬解析
 
 
 词法属性attr对应的类型和值
