@@ -17,5 +17,6 @@ antlr4::Token *pdLexer::emit()
 	}else if (this->type == pdfLexer::EndStream){
 		out.close();
 		}
+		this->addErrorListener(new antlr4::ConsoleErrorListener());
 	return	pdfLexer::emit();
 }

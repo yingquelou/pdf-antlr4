@@ -40,5 +40,6 @@ endfunction()
 #     message(${arg})
 # endforeach()
 
-add_subdirectory(ParserPdf)
+# add_subdirectory(ParserPdf)
+add_subdirectory(ParserB)
 # add_subdirectory(FlateDecode)

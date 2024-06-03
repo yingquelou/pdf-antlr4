@@ -1,11 +1,13 @@
 lexer grammar BLexer;
 options{
 	language = Cpp;
-	caseInsensitive = true;
 }
-
-Stream: 'stream' -> mode(streamMode);
-Char: (. | [\r\n]);
-mode streamMode;
-EndStream: 'endstream' -> mode(DEFAULT_MODE);
-Any: (. | [\r\n]) -> skip;
+@ lexer:: members {
+public:
+	void emitErrorMessage(const std::string& msg) {
+		std::cerr << msg << std::endl;
+	}
+}
+PDEOF: '%%EOF' ;
+Ignore: EOF -> skip;
+Any: .;
