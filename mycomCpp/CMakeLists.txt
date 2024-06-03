@@ -1,4 +1,0 @@
-cmake_minimum_required(VERSION 3.8)
-cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
-project(${PROJ})
-add_executable(${PROJ} mycom.cpp)

@@ -1,5 +1,3 @@
-*.bat
-
 *.txt
 !CMakeLists.txt
 

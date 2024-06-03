@@ -1,0 +1,1 @@
+java -jar "d:\Program Files\Microsoft VS Code\data\extensions\mike-lischke.vscode-antlr4-2.4.6\node_modules\antlr4ng-cli\antlr4-4.13.2-SNAPSHOT-complete.jar" -message-format antlr -o d:\projects\c\demo\ParserPdf\.antlr -listener -visitor -Xexact-output-dir d:\projects\c\demo\ParserPdf\pdfParser.g4
