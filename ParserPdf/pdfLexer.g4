@@ -14,14 +14,13 @@ options{
 channels {
 	streambody
 }
-Space: [ \t\r\n] -> skip;
+EOL: '\r'? '\n' -> skip;
+Space: ' ' -> skip;
 Trailer: 'trailer';
 Ld: '<<';
 Rd: '>>';
-Lx: '<' -> mode(hstrMode);
 La: '[';
 Ra: ']';
-fragment D: [0-9];
 Null: 'null';
 Obj: 'obj';
 R: 'R';
@@ -32,13 +31,18 @@ F: 'f';
 N: 'n';
 Lp: '(' -> mode(strMode);
 Boolean: 'false' | 'true';
+Lx: '<' -> mode(hstrMode);
+fragment D: [0-9];
 Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
 Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>' | ']'))+;
 
 Comment: '%' .*? (EOF | Space+) -> skip;
 Stream: 'stream' Space* -> mode(StreamMode);
-fragment EOL: '\r'? '\n';
+
+mode StreamMode;
+EndStream: Space* 'endstream' -> mode(DEFAULT_MODE);
+Byte: . -> channel(streambody);
 
 mode strMode;
 Concat: '\\' [ \t]* EOL -> skip;
@@ -48,7 +52,3 @@ mode hstrMode;
 HIgnore: Space -> skip;
 HexChar: [0-9A-Fa-f];
 Rx: '>' -> mode(DEFAULT_MODE);
-
-mode StreamMode;
-EndStream: Space* 'endstream' -> mode(DEFAULT_MODE);
-Byte: . -> channel(streambody);

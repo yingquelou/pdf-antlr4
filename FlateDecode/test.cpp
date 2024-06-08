@@ -10,7 +10,6 @@
 #include <vector>
 #include <algorithm>
 #include <zlib.h>
-
 std::string read_file(const std::string &filename)
 {
     std::ifstream ifs(filename);
@@ -66,7 +65,7 @@ std::string decode_FlateDecode(const std::string &data)
     return decoded_data;
 }
 
-int main(int argc, const char *argv[])
+int domain(int argc, const char *argv[])
 {
     for (size_t i = 1; argv[i]; i++)
     {
@@ -77,5 +76,17 @@ int main(int argc, const char *argv[])
         std::cout << decode_FlateDecode(content);
     }
 
+    return 0;
+}
+int main(int argc, char const *argv[])
+{
+    for (size_t i = 1; argv[i]; i++)
+    {
+        std::ifstream ifs(argv[i], std::ios::binary);
+        std::istreambuf_iterator<char> begin(ifs), end;
+        std::string content(begin, end);
+        std::cout << decode_FlateDecode(content);
+        
+    }
     return 0;
 }

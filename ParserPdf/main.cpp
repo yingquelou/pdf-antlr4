@@ -4,7 +4,6 @@
 #include <pdfParser.h>
 // #include "format.h"
 #include "pdListener.h"
-#include "pdLexerErrorListener.h"
 int main(int argc, char const *argv[])
 {
     for (size_t i = 1; argv[i]; ++i)
@@ -17,13 +16,10 @@ int main(int argc, char const *argv[])
         antlr4::ANTLRFileStream input;
         input.load(ifs, true);
         pdLexer lexer(&input);
-        pdLexerErrorListener errorListener;
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(&errorListener);
         antlr4::CommonTokenStream ct(&lexer);
         pdfParser parser(&ct);
-        pdListener listener;
-        parser.addParseListener(&listener);
+        // pdListener listener;
+        // parser.addParseListener(&listener);
         parser.start();
         // auto &&node = parser.start();
         // ofs << node->getText();

@@ -50,7 +50,7 @@ options{
 	tokenVocab = pdfLexer;
 }
 start: pdfStruct+;
-pdfStruct: startxref | xref | trailer | pdfObj;
+pdfStruct: pdfObj | startxref | xref | trailer ;
 startxref: Startxref Int;
 pdfObj
 	locals[bool status=false]:
@@ -74,9 +74,9 @@ xStr: Lx HexChar* Rx;
 objRef
 	locals[bool status=false]:
 	Int Int (R {$status=true;})? {$status}?;
-xref: Xref subXref+;
-subXref: Int Int subXrefEntry+;
-subXrefEntry: Int Int (F | N);
 array: La obj? obj* Ra;
 dict: Ld (obj obj)*? obj? Rd;
 stream: Stream EndStream;
+xref: Xref subXref+;
+subXref: Int Int subXrefEntry+;
+subXrefEntry: Int Int (F | N);

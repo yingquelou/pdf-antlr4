@@ -2,6 +2,7 @@
 
 antlr4::Token *pdLexer::emit()
 {
+	this->skip();
     if(this->channel == pdfLexer::streambody){
 		out << this->getText();
 	}else if(this->type == pdfLexer::Int){
