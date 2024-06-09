@@ -9,3 +9,4 @@ file(GLOB LEX .antlr/*.cpp;*.cpp)
 add_executable(${PROJ} ${LEX})
 target_link_libraries(${PROJ} antlr4-runtime)
 
+

@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <iterator>
 #include <zlib.h>
 std::string read_file(const std::string &filename)
 {
@@ -83,10 +83,9 @@ int main(int argc, char const *argv[])
     for (size_t i = 1; argv[i]; i++)
     {
         std::ifstream ifs(argv[i], std::ios::binary);
-        std::istreambuf_iterator<char> begin(ifs), end;
+        std::istream_iterator<char> begin(ifs), end;
         std::string content(begin, end);
         std::cout << decode_FlateDecode(content);
-        
     }
     return 0;
 }

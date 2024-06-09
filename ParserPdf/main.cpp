@@ -2,7 +2,7 @@
 #include <antlr4-runtime.h>
 #include <pdLexer.h>
 #include <pdfParser.h>
-// #include "format.h"
+#include "format.h"
 #include "pdListener.h"
 int main(int argc, char const *argv[])
 {
@@ -17,17 +17,21 @@ int main(int argc, char const *argv[])
         input.load(ifs, true);
         pdLexer lexer(&input);
         antlr4::CommonTokenStream ct(&lexer);
+        // while (ct.LA(1) != antlr4::Token::EOF)
+        // {
+        //     ofs << ct.LT(1)->getText() << '\n';
+        //     ct.consume();
+        // }
         pdfParser parser(&ct);
-        // pdListener listener;
-        // parser.addParseListener(&listener);
-        parser.start();
-        // auto &&node = parser.start();
+        pdListener listener;
+        parser.addParseListener(&listener);
+        auto &&node = parser.pdf();
         // ofs << node->getText();
         // parser.array();
         // parser.stream();
         // antlr4::Token *t;
-        // antlr4::format ft(ofs);
-        // ft.visit(node);
+        antlr4::format ft(ofs);
+        ft.visit(node);
         ofs.close();
         ifs.close();
     }

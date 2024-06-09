@@ -27,6 +27,7 @@ endfunction()
 function(configAntlr4Target g4Files RET)
 cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
 add_custom_target(${PROJ}Antlr4
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_CURRENT_LIST_DIR}/.antlr
         COMMAND java -jar ${ANTLR4JAR} ${${g4Files}}
         -o ${CMAKE_CURRENT_LIST_DIR}/.antlr 
         -visitor
@@ -34,12 +35,12 @@ add_custom_target(${PROJ}Antlr4
         COMMENT "Generating C++ ANTLR files to ${CMAKE_CURRENT_LIST_DIR}/.antlr"
         )
 endfunction()
-
+include(CTest)
 # configAntlr4Output(E:/projects/github/pdf-antlr4/ParserPdf/pdfparser.g4)
 # foreach(arg IN LISTS RET)
 #     message(${arg})
 # endforeach()
-
+enable_testing()
 add_subdirectory(ParserPdf)
 # add_subdirectory(ParserB)
 # add_subdirectory(FlateDecode)
