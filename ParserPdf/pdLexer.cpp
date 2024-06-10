@@ -1,7 +1,8 @@
 #include "pdLexer.h"
-
 antlr4::Token *pdLexer::emit()
 {
+	static std::stringstream out;
+	static std::ofstream ofs;
 	if (this->channel == pdfLexer::streambody)
 	{
 		out << this->getText();
@@ -21,11 +22,16 @@ antlr4::Token *pdLexer::emit()
 	}
 	else if (this->type == pdfLexer::Stream)
 	{
-		out.open(index + "_" + gen + "_" + std::to_string(count++) + ".stream", std::ios_base::binary);
+		setText("stream");
+		out.str("");
 	}
 	else if (this->type == pdfLexer::EndStream)
 	{
-		out.close();
+		setText("endstream");
+		if (ofs.is_open())
+			ofs.close();
+		ofs.open(index + "_" + gen + "_" + std::to_string(count++) + ".stream");
+		ofs << out.str();
 	}
 	return pdfLexer::emit();
 }

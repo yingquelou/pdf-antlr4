@@ -13,3 +13,5 @@ build
 *.ma*
 *.stream
 *.exe
+*.obj*
+tmp

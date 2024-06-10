@@ -8,11 +8,12 @@ namespace antlr4
     class format : tree::AbstractParseTreeVisitor
     {
         std::ostream &os;
+        bool split;
+        std::string index, gen;
+        int count = 1;
 
     public:
-        format(std::ostream &_os) : os(_os)
-        {
-        }
+        format(std::ostream &_os, bool split = false) : os(_os), split(split) {}
         std::any visit(pdfParser::ObjContext *tree)
         {
             if (tree)
@@ -96,21 +97,6 @@ namespace antlr4
             if (tree)
             {
                 auto &&vec = tree->pdfObj();
-                static auto comparePdfObjContext = [](pdfParser::PdfObjContext *const &lhs, pdfParser::PdfObjContext *const &rhs)
-                {
-                    std::string &&l = lhs->Int(0)->getText();
-                    std::string &&r = rhs->Int(0)->getText();
-                    if (l > r)
-                        return false;
-                    else if (l < r)
-                        return true;
-                    std::string &&l1 = lhs->Int(1)->getText();
-                    std::string &&r1 = rhs->Int(1)->getText();
-                    if (l1 > r1)
-                        return false;
-                    return true;
-                };
-                std::set<pdfParser::PdfObjContext *, decltype(comparePdfObjContext)> set(vec.begin(), vec.end(), comparePdfObjContext);
                 bool newline = false;
                 static auto visitnode = [&](auto &&node)
                 { if (newline)
@@ -118,7 +104,7 @@ namespace antlr4
                     else
                         newline = true;
                     visit(node); };
-                std::for_each(set.begin(), set.end(), visitnode);
+                std::for_each(vec.begin(), vec.end(), visitnode);
                 auto &&xref = tree->xref();
                 std::for_each(xref.begin(), xref.end(), visitnode);
                 auto &&trailer = tree->trailer();
@@ -215,18 +201,52 @@ namespace antlr4
         {
             if (tree)
             {
-                visit(tree->Int(0));
-                os << ' ';
-                visit(tree->Int(1));
-                os << ' ';
-                visit(tree->Obj());
+                auto &&curIndex = tree->Int(0);
+                auto &&curGen = tree->Int(1);
+                static std::streambuf *cout;
+                // static std::ofstream out;
+                static std::stringstream out;
+                static std::string name;
+                if (split)
+                {
+                    if (index != curIndex->getText() || gen != curGen->getText())
+                    {
+                        count = 1;
+                        index = curIndex->getText();
+                        gen = curGen->getText();
+                    }
+                    else
+                        ++count;
+                    out.str("");
+                    name = index + '_' + gen + '_' + std::to_string(count) + ".pdfobj";
+                    // std::cout << name << '\n';
+                    cout = os.rdbuf(out.rdbuf());
+                }
+                if (!split)
+                {
+                    visit(curIndex);
+                    os << ' ';
+                    visit(curGen);
+                    os << ' ';
+                    visit(tree->Obj());
+                }
                 for (auto &&node : tree->obj())
                 {
                     os << '\n';
                     visit(node);
                 }
-                os << '\n';
-                visit(tree->EndObj());
+                if (!split)
+                {
+                    os << '\n';
+                    visit(tree->EndObj());
+                }
+                else
+                {
+                    std::ofstream ofs(name, std::ios_base::binary);
+                    ofs << out.str();
+                    ofs.close();
+                    os.rdbuf(cout);
+                }
             }
             return 0;
         }
@@ -270,17 +290,9 @@ namespace antlr4
                 }
             return 0;
         }
-        static std::string trim(std::string &&str)
-        {
-            while (::isspace(str.front()))
-                str.erase(str.begin());
-            while (::isspace(str.back()))
-                str.pop_back();
-            return str;
-        }
         std::any visitTerminal(tree::TerminalNode *node) override
         {
-            os << trim(node->getText());
+            os << node->getText();
             return 0;
         }
     };

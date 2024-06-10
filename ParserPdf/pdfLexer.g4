@@ -19,7 +19,7 @@ Ld: '<<';
 Rd: '>>';
 La: '[';
 Ra: ']';
-Stream: 'stream' Space* -> mode(StreamMode);
+Stream: 'stream' Space* EOL -> mode(StreamMode);
 Lp: '(' -> mode(strMode);
 Lx: '<' -> mode(xstrMode);
 fragment D: [0-9];
@@ -27,19 +27,19 @@ Int: [+-]? D+;
 Float: [+-]? (D+ '.' D+ | D+ '.' | '.' D+);
 Name: '/' (~([ \t\r\n] | '(' | '<' | '[' | '/' | '>' | ']'))+;
 EOL: '\r'? '\n' -> skip;
-Space: [ \r\n\t] -> skip;
+Space: [ \t] -> skip;
 Comment: '%' .*? (EOL | EOF) -> skip;
 
 mode StreamMode;
-EndStream: Space* 'endstream' -> mode(DEFAULT_MODE);
+EndStream: EOL Space* 'endstream' -> mode(DEFAULT_MODE);
 Byte: . -> channel(streambody);
 
 mode strMode;
-Concat: '\\' [ \t]* EOL -> skip;
+Concat: '\\' Space* EOL -> skip;
 Char: '\\' (D D? D? | [nrtbf] | '\\' | '(' | ')') | ~')';
 Rp: ')' -> mode(DEFAULT_MODE);
 
 mode xstrMode;
-HIgnore: Space+ -> skip;
+HIgnore: ('\u0020' | '\u0009' | '\u000d' | '\u000a' | '\u000c') -> skip;
 Xchar: [0-9A-Fa-f];
 Rx: '>' -> mode(DEFAULT_MODE);

@@ -6,7 +6,6 @@ class pdLexer : public pdfLexer
 private:
     std::string index, gen;
     long long count;
-    std::ofstream out;
     PdfObjIndexEntryVector<std::string, 2> indexEntryVector;
 
 public:

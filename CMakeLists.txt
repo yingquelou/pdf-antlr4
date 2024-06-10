@@ -3,7 +3,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
 project(${PROJ} LANGUAGES C CXX)
 
 set(BUILD_SHARED_LIBS TRUE)
-set(CMAKE_C_STANDARD 26)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 26)
 
 
@@ -42,5 +42,6 @@ include(CTest)
 # endforeach()
 enable_testing()
 add_subdirectory(ParserPdf)
+# add_subdirectory(demo)
 # add_subdirectory(ParserB)
 # add_subdirectory(FlateDecode)
