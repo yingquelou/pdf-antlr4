@@ -30,11 +30,12 @@ int main(int argc, char const *argv[])
         // parser.array();
         // parser.stream();
         // antlr4::Token *t;
-        bool split = true;
+        bool split = false;
         antlr4::format ft(ofs,split);
         ft.visit(node);
         ofs.close();
         ifs.close();
+        break;
     }
     return 0;
 }
