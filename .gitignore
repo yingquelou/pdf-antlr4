@@ -15,3 +15,4 @@ build
 *.exe
 *.obj*
 tmp
+.vs

@@ -17,16 +17,7 @@ int main(int argc, char const *argv[])
         in.push(iostreams::zlib_decompressor());
         // 载入pdf文件的stream...endstream之间的数据流
         in.push(iostreams::file_source(argv[i], std::ios_base::in | std::ios_base::binary));
-        in.seekg(0, std::ios_base::end);
-        std::streampos length = in.tellg();
-        in.seekg(0, std::ios_base::beg);
-        std::string buffer;
-        buffer.resize(length);
-        in.read(&buffer[0], length);
-        std::cout << buffer << std::endl;
-        std::ofstream out("test.txt");
-        out << buffer;
-        out.close();
+        in.set_auto_close(true);
     }
     return 0;
 }

@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         ft.visit(node);
         ofs.close();
         ifs.close();
-        break;
+        // break;
     }
     return 0;
 }
