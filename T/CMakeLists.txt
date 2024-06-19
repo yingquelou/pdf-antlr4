@@ -1,0 +1,11 @@
+cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
+include(antlr4-generator)
+find_package(antlr4-runtime REQUIRED)
+include_directories(. ${ANTLR4_INCLUDE_DIR})
+# add_executable(${PROJ} ${LEX})
+set(LEXER ${CMAKE_CURRENT_LIST_DIR}/TLexer.g4)
+set(ANTLR4_JAR_LOCATION ${CMAKE_SOURCE_DIR}/antlr4-runtime/antlr4-4.13.2-SNAPSHOT-complete.jar)  
+antlr4_generate(TARGET ${PROJ} GRAMMAR_FILE ${LEXER}
+OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+add_library(${PROJ} SHARED ${ANTLR4_GENERATED_FILES})
+target_link_libraries(${PROJ} antlr4-runtime)
