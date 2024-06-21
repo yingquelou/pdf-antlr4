@@ -10,10 +10,10 @@ public:
     {
         // 如果%%EOF未被匹配，则不能输出EOF，应该被忽略
         // 否则才能输出EOF
-        if(this->getInputStream()->LA(1) == EOF)
-            this->getInputStream()->consume();
-        else
-            std::cerr << "Not EOF" << std::endl;
+        // if(this->getInputStream()->LA(1) == EOF)
+        //     this->getInputStream()->consume();
+        // else
+        //     std::cerr << "Not EOF" << std::endl;
         return BLexer::emitEOF();
     }
 };
@@ -22,6 +22,7 @@ int main(int argc, char const *argv[])
     for (size_t i = 1; argv[i]; ++i)
     {
         std::ifstream ifs(argv[i]);
+        std::cout << "Parsing " << argv[i] << std::endl;
         if (ifs)
         {
             antlr4::ANTLRFileStream file;

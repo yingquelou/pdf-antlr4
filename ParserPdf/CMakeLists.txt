@@ -2,19 +2,31 @@ cmake_minimum_required(VERSION 3.8)
 cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
 cmake_path(GET CMAKE_CXX_COMPILER PARENT_PATH DIR)
 
-# set(MYSY2_INCLUDE ${DIR}/../include)
-
 find_package(antlr4-runtime REQUIRED)
 
-# include_directories(.antlr ${MYSY2_INCLUDE}/antlr4-runtime .)
-include_directories(.antlr . ${ANTLR4_INCLUDE_DIR})
-file(GLOB LEX *.cpp;.antlr/*.cpp)
-file(GLOB ANTLR4SRC .*.g;*.g4)
-
-# configAntlr4Output(${ANTLR4SRC})
-# configAntlr4Target(ANTLR4SRC ${RET})
-add_executable(${PROJ} ${LEX})
-# add_dependencies(${PROJ} ${PROJ}Antlr4)
+file(GLOB ANTLR4_JAR_LOCATION ${CMAKE_SOURCE_DIR}/antlr4-runtime/antlr4-*-complete.jar)
+list(GET ANTLR4_JAR_LOCATION 0 ANTLR4_JAR_LOCATION)
+include(antlr4-generator)
+file(GLOB LEXER ${CMAKE_CURRENT_LIST_DIR}/*Lexer.g4)
+file(GLOB PARSER ${CMAKE_CURRENT_LIST_DIR}/*Parser.g4)
+antlr4_generate(TARGET ${PROJ}
+GRAMMAR_FILE ${LEXER} LEXER VISITOR LISTENER
+# OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/generated
+)
+antlr4_generate(TARGET ${PROJ}PARSER
+GRAMMAR_FILE ${PARSER} PARSER VISITOR LISTENER
+LIB_DIR ${${PROJ}_ANTLR4_GENERATED_DIR}
+DEPENDS ${${PROJ}_ANTLR4_TOKENS_FILE}
+)
+include_directories(. ${ANTLR4_INCLUDE_DIR})
+include_directories(${${PROJ}_ANTLR4_INCLUDE_DIR})
+include_directories(${${PROJ}PARSER_ANTLR4_INCLUDE_DIR})
+file(GLOB SRC ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
+add_executable(${PROJ}
+${SRC}
+${${PROJ}_ANTLR4_GENERATED_SOURCE}
+${${PROJ}PARSER_ANTLR4_GENERATED_SOURCE}
+)
 target_link_libraries(${PROJ} antlr4-runtime)
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/rec)
