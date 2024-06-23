@@ -2,8 +2,8 @@
 #include <antlr4-runtime.h>
 #include <pdLexer.h>
 #include <pdfParser.h>
-#include "format.h"
-#include "pdListener.h"
+#include <format.h>
+#include <pdListener.h>
 int main(int argc, char const *argv[])
 {
     for (size_t i = 1; argv[i]; ++i)
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
         // parser.stream();
         // antlr4::Token *t;
         bool split = false;
-        antlr4::format ft(ofs,split);
+        antlr4::pdfFormatVisitor ft(ofs,split);
         ft.visit(node);
         ofs.close();
         ifs.close();

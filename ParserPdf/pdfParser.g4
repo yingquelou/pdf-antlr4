@@ -22,7 +22,9 @@ obj:
 	| dict
 	| array
 	| stream;
-str: Lp Char* Rp;
+str: lp substr* Rp;
+substr: Char | str;
+lp: Lp | Lp2;
 xStr: Lx Xchar* Rx;
 objRef
 	locals[bool status=false]:
@@ -32,5 +34,5 @@ array: La obj? obj* Ra;
 dict: Ld (obj obj)*? obj? Rd;
 stream: Stream EndStream;
 xref: Xref subXref+;
-subXref: Int Int subXrefEntry+;
+subXref: Int Int subXrefEntry*;
 subXrefEntry: Int Int (F | N);
