@@ -8,11 +8,11 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 
-include(CTest)
+include(antlr4-generator)
 
 enable_testing()
-add_subdirectory(ParserPdf)
+# add_subdirectory(ParserPdf)
 # add_subdirectory(T)
 # add_subdirectory(demo)
-# add_subdirectory(ParserB)
+add_subdirectory(ParserB)
 # add_subdirectory(FlateDecode)

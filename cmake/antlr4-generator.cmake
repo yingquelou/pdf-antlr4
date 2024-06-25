@@ -1,23 +1,3 @@
-# This CMake script provides functions for generating C++ ANTLR files.
-# It includes functions for finding Java runtime, getting the output prefix of ANTLR4 files, and generating ANTLR4 files.
-
-# find_package(Java COMPONENTS Runtime REQUIRED)
-# This command is used to find the Java runtime component.
-
-# function(getAntlr4OutputPrefix)
-# This function is used to get the output prefix of ANTLR4 files.
-# It takes a list of grammar files as input and removes the file extension to get the output prefix.
-# The output prefix is stored in the ANTLR4_OUTPUT_PREFIX variable.
-
-# function(antlr4_generate)
-# This function is used to generate C++ ANTLR files.
-# It takes several arguments including the target name, grammar file, output directory, and optional options.
-# The function generates lexer and/or parser files based on the specified options.
-# The generated files are stored in the specified output directory.
-# The function also supports generating visitor and/or listener files for parser grammars.
-# The function uses the ANTLR4 JAR file to generate the files.
-# The generated files are added as dependencies to the target.
-# The function sets several variables including the generated source files, generated header files, include directory, and tokens file.
 find_package(Java COMPONENTS Runtime REQUIRED)
 
 function(getAntlr4OutputPrefix)
@@ -114,4 +94,105 @@ set(${ANTLR4_TARGET}_ANTLR4_INCLUDE_DIR ${ANTLR4_OUTPUT_DIRECTORY} PARENT_SCOPE)
 set(${ANTLR4_TARGET}_ANTLR4_GENERATED_DIR ${ANTLR4_OUTPUT_DIRECTORY} PARENT_SCOPE)
 set(${ANTLR4_TARGET}_ANTLR4_TOKENS_FILE ${${ANTLR4_TARGET}_ANTLR4_TOKENS_FILE} PARENT_SCOPE)
 set(${ANTLR4_TARGET}_ANTLR4_INTERP_FILE ${${ANTLR4_TARGET}_ANTLR4_INTERP_FILE} PARENT_SCOPE)
+endfunction()
+
+function(antlr4_configure)
+set(options_args
+# ANTLR4 TOOL OPTIONS
+LISTENER # generate parse tree listener
+VISITOR # generate parse tree visitor
+DEPEND # generate file dependencies
+LONG_MESSAGES # show exception details when available for errors and warnings
+ATN # generate rule augmented transition network diagrams
+)
+set(single_value_args
+PREFIX # prefix for generated files
+ANTLR4_JAR_LOCATION # location of antlr4 jar file, if not specified,it will use the value of ANTLR4_JAR_LOCATION which is from a cmake variable or environment variable
+ENCODING # specify encoding of grammar files
+LEXER_OUTPUT_DIRECTORY # specify output directory for lexer files,if not specified, use CMAKE_CURRENT_BINARY_DIR
+PARSER_OUTPUT_DIRECTORY # specify output directory for parser files,if not specified, It will be the same as LEXER_OUTPUT_DIRECTORY
+# ANTLR4 TOOL OPTIONS
+PACKAGE # specify a package/namespace for the generated code
+MESSAGE_FORMAT # specify output style for messages in antlr, gnu, vs2005
+# CASE_INSENSITIVE # specify case-insensitive option for lexer
+# EXPORT_MACRO # specify export macro for windows dll
+# TOKEN_LABEL_TYPE # specify token label type
+)
+set(multi_value_args
+LEXER_GRAMMARS # list of lexer grammars
+LEXER_DEPENDS # list of dependencies for lexer grammars
+PARSER_GRAMMARS # list of parser grammars to process
+PARSER_DEPENDS # list of dependencies for parser grammars. in the default case, except for what you specify, it will also contain the corresponding lexer grammar
+# ANTLR4 TOOL OPTIONS
+LIB # specify location of grammars, tokens files,default LEXER_OUTPUT_DIRECTORY and PARSER_OUTPUT_DIRECTORY will be contained
+# TOKEN_VOCAB # list of token vocabulary files
+)
+cmake_parse_arguments(ANTLR4 "${options_args}" "${single_value_args}" "${multi_value_args}" ${ARGV})
+if(ANTLR4_UNPARSED_ARGUMENTS)
+message(WARNING "unparsed arguments: ${ANTLR4_UNPARSED_ARGUMENTS}")
+endif()
+if(NOT ANTLR4_ANTLR4_JAR_LOCATION)
+  if(DEFINED ENV{ANTLR4_JAR_LOCATION})
+  set(ANTLR4_ANTLR4_JAR_LOCATION $ENV{ANTLR4_JAR_LOCATION})
+  elseif(DEFINED ANTLR4_JAR_LOCATION)
+  set(ANTLR4_ANTLR4_JAR_LOCATION ${ANTLR4_JAR_LOCATION})
+  else()
+  message(FATAL_ERROR "ANTLR4_JAR_LOCATION not specified")
+  endif()
+endif()
+
+
+endfunction()
+
+function(antlr4_generate_files)
+set(options_args LEXER PARSER VISITOR LISTENER)
+set(single_value_args TARGET GRAMMAR_FILE OUTPUT_DIRECTORY)
+set(multi_value_args LIB_DIR DEPENDS)
+cmake_parse_arguments(ANTLR4 "${options_args}" "${single_value_args}" "${multi_value_args}" ${ARGN})
+if(ANTLR4_UNPARSED_ARGUMENTS)
+message(UNPARSED_ARGUMENTS:${ANTLR4_UNPARSED_ARGUMENTS})  
+endif()
+if(NOT ANTLR4_TARGET)
+  message(FATAL_ERROR "TARGET not specified")
+endif()
+if(NOT ANTLR4_GRAMMAR_FILE)
+  message(FATAL_ERROR "GRAMMAR_FILE not specified")
+endif()
+if(NOT ANTLR4_OUTPUT_DIRECTORY)
+set(ANTLR4_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+if(ANTLR4_LEXER AND ANTLR4_PARSER)
+message(FATAL_ERROR "Cannot specify both LEXER and PARSER options together. Please specify only one of them.")
+endif()
+if(NOT (ANTLR4_LEXER OR ANTLR4_PARSER))
+  set(ANTLR4_LEXER TRUE)
+  set(ANTLR4_PARSER TRUE)
+endif()
+getAntlr4OutputPrefix(${ANTLR4_GRAMMAR_FILE})
+if(ANTLR4_LEXER)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_HEADER ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Lexer.h)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_SOURCE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Lexer.cpp)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_TOKENS_FILE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Lexer.tokens)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_INTERP_FILE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Lexer.interp)
+endif()
+if(ANTLR4_PARSER)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_HEADER ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Parser.h)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_SOURCE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Parser.cpp)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_TOKENS_FILE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Parser.tokens)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_INTERP_FILE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}Parser.interp)
+endif()
+if(ANTLR4_LEXER AND (ANTLR4_LISTENER OR ANTLR4_VISITOR))
+message(WARNING "LISTENER and VISITOR options are not supported for lexer grammars when yon specify LEXER option. Ignoring them.")
+endif()
+if(ANTLR4_VISITOR AND ANTLR4_PARSER)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_HEADER ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserBaseVisitor.h ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserVisitor.h)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_SOURCE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserBaseVisitor.cpp ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserVisitor.cpp)
+endif()
+if(ANTLR4_LISTENER AND ANTLR4_PARSER)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_HEADER ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserBaseListener.h ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserListener.h)
+list(APPEND ${ANTLR4_TARGET}_ANTLR4_GENERATED_SOURCE ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserBaseListener.cpp ${ANTLR4_OUTPUT_DIRECTORY}/${ANTLR4_OUTPUT_PREFIX}ParserListener.cpp)
+endif()
+  
+  
 endfunction()

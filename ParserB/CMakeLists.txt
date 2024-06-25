@@ -4,27 +4,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR FILENAME PROJ)
 find_package(antlr4-runtime REQUIRED)
 file(GLOB ANTLR4_JAR_LOCATION ${CMAKE_SOURCE_DIR}/antlr4-runtime/antlr4-*-complete.jar)
 list(GET ANTLR4_JAR_LOCATION 0 ANTLR4_JAR_LOCATION)
-include(antlr4-generator)
 file(GLOB LEXER ${CMAKE_CURRENT_LIST_DIR}/*Lexer.g4)
 file(GLOB PARSER ${CMAKE_CURRENT_LIST_DIR}/*Parser.g4)
-antlr4_generate(TARGET ${PROJ}
-GRAMMAR_FILE ${LEXER} LEXER VISITOR LISTENER
-# OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/generated
-)
-# message(${${PROJ}_ANTLR4_TOKENS_FILE})
-antlr4_generate(TARGET ${PROJ}PARSER
-GRAMMAR_FILE ${PARSER} PARSER VISITOR LISTENER
-LIB_DIR ${${PROJ}_ANTLR4_GENERATED_DIR}
-DEPENDS ${${PROJ}_ANTLR4_TOKENS_FILE}
-)
-include_directories(. ${ANTLR4_INCLUDE_DIR})
-include_directories(${${PROJ}_ANTLR4_INCLUDE_DIR})
-include_directories(${${PROJ}PARSER_ANTLR4_INCLUDE_DIR})
-file(GLOB SRC ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
-add_executable(${PROJ}
-${SRC}
-${${PROJ}_ANTLR4_GENERATED_SOURCE}
-${${PROJ}PARSER_ANTLR4_GENERATED_SOURCE}
-)
-target_link_libraries(${PROJ} antlr4-runtime)
 
+antlr4_configure(PREFIX ${PROJ})
