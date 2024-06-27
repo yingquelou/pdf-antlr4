@@ -1,0 +1,7 @@
+#include <jansson.h>
+#ifdef PDFLEX
+#include <@yacc_header@>
+#endif
+#ifdef PDFYACC
+#include <@lex_header@>
+#endif
